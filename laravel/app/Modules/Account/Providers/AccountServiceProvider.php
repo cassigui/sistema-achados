@@ -9,19 +9,17 @@ use Illuminate\Support\ServiceProvider;
 class AccountServiceProvider extends ServiceProvider
 {
     public function boot()
-    {
+    {   
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'wf.account');
-
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'wf.account');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'account');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'account');
 
         Route::middleware('web')
-            ->prefix('wf-web')
+            ->prefix('web')
             ->group(__DIR__ . '/../routes/web.php');
 
         Route::middleware('api')
-            ->prefix('wf-api')
+            ->prefix('api')
             ->group(__DIR__ . '/../routes/api.php');
 
         Relation::morphMap([

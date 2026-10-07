@@ -9,13 +9,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TokenService
 {
-    /** Validade do token temporário entre a senha e o código MFA. */
-    const MFA_TOKEN_MINUTES = 5;
-
-    public function __construct(User $user, MfaService $mfa_service)
+    public function __construct(User $user)
     {
         $this->model       = $user;
-        $this->mfa_service = $mfa_service;
         // $this->auditing_service = $auditing_service;
     }
 
@@ -49,45 +45,6 @@ class TokenService
     }
 
     /**
-     * Segundo passo do login: valida o código (app ou recuperação) e emite o
-     * token definitivo.
-     */
-    public function validateMfaLogin(string $temp_token, string $code, array $relations = [], bool $is_backup_code = false)
-    {
-        JWTAuth::setToken($temp_token);
-
-        try {
-            $user = JWTAuth::authenticate();
-        } catch (\Exception $e) {
-            throw new AccountException(401, 'Sessão expirada. Faça o login novamente.');
-        }
-
-        if (empty($user)) {
-            throw new AccountException(401, 'Sessão expirada. Faça o login novamente.');
-        }
-
-        $valid = $is_backup_code
-        ? $this->mfa_service->verifyBackupCode($user, $code)
-        : $this->mfa_service->verifyCode($user, $code);
-
-        if (!$valid) {
-            throw new AccountException(422, 'Código de verificação incorreto.');
-        }
-
-        // Decodificar o token temporário deixou mfa_pending acumulada na
-        // factory; sem limpar, o token definitivo nasceria com a claim.
-        $this->resetJwtClaims();
-
-        $token = auth('api')->login($user);
-
-        $user->makeVisible('super_admin');
-
-        $this->load($user, $relations);
-
-        return compact('token', 'user');
-    }
-
-    /**
      * Realiza a autentiação e retorna usuário e token
      *
      * @var array $credentials
@@ -98,13 +55,9 @@ class TokenService
     {
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                throw new AccountException(401, __('wf.account::toasts.users.wrong_credentials'));
+                throw new AccountException(401, __('account::toasts.users.wrong_credentials'));
             }
             $user = $this->model->where('username', $credentials['username'])->where('active', 1)->firstOrFail();
-
-            if ($user->google2fa_enabled) {
-                return $this->mfaChallenge($user);
-            }
 
             if ($make_visible) {
                 $user->makeVisible('super_admin');
@@ -123,14 +76,10 @@ class TokenService
     {
         try {
             if (!$token = auth('api')->attempt($credentials)) {
-                throw new AccountException(401, __('wf.account::toasts.users.wrong_credentials'));
+                throw new AccountException(401, __('account::toasts.users.wrong_credentials'));
             }
 
             $user = $this->model->where('username', $credentials['username'])->firstOrFail();
-
-            if ($user->google2fa_enabled) {
-                return $this->mfaChallenge($user);
-            }
 
             if ($make_visible) {
                 $user->makeVisible('super_admin');
@@ -155,7 +104,7 @@ class TokenService
     {
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                throw new AccountException(401, __('wf.account::toasts.users.wrong_credentials'));
+                throw new AccountException(401, __('account::toasts.users.wrong_credentials'));
             }
 
             $user = $this->model->where('email', $credentials['email'])->firstOrFail();
@@ -189,7 +138,7 @@ class TokenService
     public function validateToken(string $token = '', array $relations = [], bool $make_visible = false)
     {
         if ($token == 'null') {
-            throw new AccountException(401, __('wf.account::toasts.users.wrong_credentials'));
+            throw new AccountException(401, __('account::toasts.users.wrong_credentials'));
         }
 
         $user = auth('api')->setToken($token)->user();
@@ -202,7 +151,7 @@ class TokenService
 
             $this->load($user, $relations);
         } else {
-            throw new AccountException(401, __('wf.account::toasts.users.wrong_credentials'));
+            throw new AccountException(401, __('account::toasts.users.wrong_credentials'));
         }
 
         // $this->auditingAction('login', $user);

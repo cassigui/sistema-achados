@@ -4,7 +4,6 @@ namespace App\Modules\Account\Users;
 use App\Modules\Account\AccountException;
 use App\Modules\Account\Auth\AuthService;
 use App\Modules\Account\Notifications\ResetPasswordNotification;
-use App\Modules\Addressing\Addresses\AddressService;
 use App\Modules\Base\Services\ApiService;
 use App\Modules\Phones\PhoneService;
 use Hash;
@@ -13,12 +12,11 @@ use Illuminate\Support\Facades\Notification;
 
 class UserService
 {
-    public function __construct(User $model, AuthService $auth_service, PhoneService $phone_service, AddressService $address_service)
+    public function __construct(User $model, AuthService $auth_service, PhoneService $phone_service)
     {
         $this->model           = $model;
         $this->api             = new ApiService($this->model, $this->getCustomFilters());
         $this->auth            = $auth_service;
-        $this->address_service = $address_service;
         $this->phone_service   = $phone_service;
     }
 

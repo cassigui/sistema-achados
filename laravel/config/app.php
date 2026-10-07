@@ -131,6 +131,7 @@ return [
     'cipher'          => 'AES-256-CBC',
 
     'providers'       => [
+
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
@@ -148,6 +149,9 @@ return [
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
         Illuminate\Redis\RedisServiceProvider::class,
+
+        Illuminate\Auth\AuthServiceProvider::class,
+
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
         Illuminate\Session\SessionServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
@@ -155,6 +159,13 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
+
+        App\Modules\Account\Providers\AccountServiceProvider::class,
+        App\Modules\Configs\Providers\ConfigServiceProvider::class,
+        App\Modules\Images\Providers\ImageServiceProvider::class
     ],
 
     'aliases'         => [

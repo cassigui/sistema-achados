@@ -10,7 +10,7 @@ class {{ModelName}}ServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'wf.{{ModelNamePluralLowerCase}}');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', '{{ModelNamePluralLowerCase}}');
 
         Route::middleware(['web', 'auth'])
             ->prefix('sistema')

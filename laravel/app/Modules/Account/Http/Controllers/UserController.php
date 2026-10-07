@@ -61,10 +61,18 @@ class UserController extends Controller
         return response()->json([
             'error'   => false,
             'user'    => $user,
-            'message' => __('wf.account::toasts.users.store'),
+            'message' => __('account::toasts.users.store'),
         ]);
     }
 
+    public function loginPage()
+    {
+        return view('account::auth.login.login_page');
+    }
+    public function registerPage()
+    {
+        return view('account::auth.register.register_page');
+    }
     public function show($id)
     {
         if ($id === 'authenticated' && Auth::check() && Auth::user()->authenticable) {
@@ -102,7 +110,7 @@ class UserController extends Controller
         return response()->json([
             'error'   => false,
             'user'    => $this->loadProfile(),
-            'message' => __('wf.account::toasts.users.update'),
+            'message' => __('account::toasts.users.update'),
         ]);
     }
 
@@ -126,7 +134,7 @@ class UserController extends Controller
         return response()->json([
             'error'   => false,
             'image'   => $image,
-            'message' => __('wf.images::toasts.store'),
+            'message' => __('images::toasts.store'),
         ]);
     }
 
@@ -136,7 +144,7 @@ class UserController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.images::toasts.destroy'),
+            'message' => __('images::toasts.destroy'),
         ]);
     }
 
@@ -168,7 +176,7 @@ class UserController extends Controller
         return response()->json([
             'error'   => false,
             'user'    => $user,
-            'message' => __('wf.account::toasts.users.update'),
+            'message' => __('account::toasts.users.update'),
         ]);
     }
 
@@ -178,7 +186,7 @@ class UserController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.users.destroy'),
+            'message' => __('account::toasts.users.destroy'),
         ]);
     }
 
@@ -188,7 +196,7 @@ class UserController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.users.restore'),
+            'message' => __('account::toasts.users.restore'),
         ]);
     }
 
@@ -206,7 +214,7 @@ class UserController extends Controller
         return response()->json(
             [
                 'error'   => true,
-                'message' => __('wf.account::toasts.users.wrong_credentials'),
+                'message' => __('account::toasts.users.wrong_credentials'),
             ], 200);
 
         // return redirect('login')->withInput()->with('status', ['error', ]);
@@ -292,7 +300,7 @@ class UserController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.password_reset_email_sent'),
+            'message' => __('account::toasts.password_reset_email_sent'),
         ]);
     }
 
@@ -326,7 +334,7 @@ class UserController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.update-password'),
+            'message' => __('account::toasts.update-password'),
             'user'    => $result['user'],
             'pcrypt'  => encrypt($request->email),
             'token'   => $result['token'],

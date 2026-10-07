@@ -30,7 +30,7 @@ class AccessLevelController extends Controller
         return response()->json([
             'error'        => false,
             'access_level' => $this->access_level_service->store($request->toArray()),
-            'message'      => __('wf.account::toasts.access_levels.store'),
+            'message'      => __('account::toasts.access_levels.store'),
         ]);
     }
 
@@ -39,7 +39,7 @@ class AccessLevelController extends Controller
         return response()->json([
             'error'        => false,
             'access_level' => $this->access_level_service->update($request->toArray(), $id),
-            'message'      => __('wf.account::toasts.access_levels.update'),
+            'message'      => __('account::toasts.access_levels.update'),
         ]);
     }
 
@@ -49,7 +49,7 @@ class AccessLevelController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.access_levels.destroy'),
+            'message' => __('account::toasts.access_levels.destroy'),
         ]);
     }
 
@@ -59,7 +59,7 @@ class AccessLevelController extends Controller
 
         return response()->json([
             'error'   => false,
-            'message' => __('wf.account::toasts.access_levels.restore'),
+            'message' => __('account::toasts.access_levels.restore'),
         ]);
     }
 

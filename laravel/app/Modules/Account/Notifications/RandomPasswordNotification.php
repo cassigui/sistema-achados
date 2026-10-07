@@ -48,7 +48,7 @@ class RandomPasswordNotification extends Notification
         return (new MailMessage)
             ->from($noreply_email, "$fantasy_name")
             ->subject($subject)
-            ->view('wf.account::mail.temp-password', compact('temp_password', 'fantasy_name'));
+            ->view('account::mail.temp-password', compact('temp_password', 'fantasy_name'));
     }
 
     /**

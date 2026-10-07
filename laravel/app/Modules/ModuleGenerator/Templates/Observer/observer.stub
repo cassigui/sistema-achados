@@ -9,26 +9,26 @@ class {{ModelName}}Observer
 {
     public function created({{ModelName}} ${{ModelNameSingularLowerCase}})
     {
-        Auditing::audit(__('wf.{{ModelNamePluralLowerCase}}::auditing.store'));
+        Auditing::audit(__('{{ModelNamePluralLowerCase}}::auditing.store'));
     }
 
     public function updated({{ModelName}} ${{ModelNameSingularLowerCase}})
     {
-        Auditing::audit(__('wf.{{ModelNamePluralLowerCase}}::auditing.update'));
+        Auditing::audit(__('{{ModelNamePluralLowerCase}}::auditing.update'));
     }
 
     public function deleted({{ModelName}} ${{ModelNameSingularLowerCase}})
     {
-        Auditing::audit(__('wf.{{ModelNamePluralLowerCase}}::auditing.delete'));
+        Auditing::audit(__('{{ModelNamePluralLowerCase}}::auditing.delete'));
     }
 
     public function restored({{ModelName}} ${{ModelNameSingularLowerCase}})
     {
-        Auditing::audit(__('wf.{{ModelNamePluralLowerCase}}::auditing.restore'));
+        Auditing::audit(__('{{ModelNamePluralLowerCase}}::auditing.restore'));
     }
 
     public function forceDeleted({{ModelName}} ${{ModelNameSingularLowerCase}})
     {
-        Auditing::audit(__('wf.{{ModelNamePluralLowerCase}}::auditing.force_delete'));
+        Auditing::audit(__('{{ModelNamePluralLowerCase}}::auditing.force_delete'));
     }
 }

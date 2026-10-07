@@ -2,7 +2,6 @@
 
 namespace App\Modules\Account\Users;
 
-use App\Modules\Base\Traits\Auditable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,14 +10,12 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Auditable;
     use Notifiable;
     use SoftDeletes;
     use Authorizable;
 
     protected $casts = [
         'active'            => 'boolean',
-        'google2fa_enabled' => 'boolean',
         'backup_codes'      => 'array',
     ];
 
@@ -39,7 +36,6 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
         'super_admin',
-        'google2fa_secret',
         'backup_codes',
     ];
 
@@ -68,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getAuditTranslationPrefix(): string
     {
-        return 'wf.account::toasts.users';
+        return 'account::toasts.users';
     }
 
     public function authenticable()

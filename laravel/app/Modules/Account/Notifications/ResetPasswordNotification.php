@@ -48,7 +48,7 @@ class ResetPasswordNotification extends Notification
         return (new MailMessage)
             ->from($noreply_email, "$fantasy_name")
             ->subject($subject)
-            ->view('wf.account::mail.reset-password', compact('token', 'fantasy_name'));
+            ->view('account::mail.reset-password', compact('token', 'fantasy_name'));
     }
 
     /**
