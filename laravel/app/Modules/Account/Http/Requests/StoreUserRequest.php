@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Modules\Account\Http\Requests;
 
 use App\Modules\Base\BaseRequest;
@@ -9,37 +8,43 @@ class StoreUserRequest extends BaseRequest
 {
     public function authorize()
     {
-        return !empty($this->user());
+        return true;
     }
 
     public function rules()
     {
-
-        $id = $this->segment(3);
         return [
-            'name'            => 'required|max:200',
-            'access_level_id' => 'required|numeric',
-            'email'           => "required|unique:users,email,{$id},id,deleted_at,NULL|email|max:255",
-            'username'        => "required|regex:/^[a-z0-9]*$/|unique:users,username,{$id},id,deleted_at,NULL|max:100",
-            'password'        => ['required', 'confirmed', 'max:30', Password::min(8)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
-            'active'          => 'required|boolean',
+            'name'     => 'required|string|max:200',
+            'email'    => 'required|email|max:255|unique:users,email,NULL,id,deleted_at,NULL',
+            'password' => [
+                'required',
+                'confirmed',
+                'max:30',
+                Password::min(8)->letters()->mixedCase()->numbers()->symbols(),
+            ],
         ];
     }
 
     public function attributeNames()
     {
         return [
-            'access_level_id' => 'Nível de acesso',
-            'username'        => 'Usuário',
+            'name'     => 'Nome completo',
+            'email'    => 'E-mail',
+            'password' => 'Senha',
         ];
     }
 
     public function messages()
     {
         return [
-            'password.min' => 'A senha deve ter pelo menos :min caracteres.',
+            'name.required'      => 'O campo nome é obrigatório.',
+            'email.required'     => 'O campo e-mail é obrigatório.',
+            'email.email'        => 'Informe um e-mail válido.',
+            'email.unique'       => 'Este e-mail já está cadastrado.',
+            'password.required'  => 'A senha é obrigatória.',
+            'password.min'       => 'A senha deve ter pelo menos :min caracteres.',
             'password.confirmed' => 'A confirmação da senha não confere.',
-            'password.max' => 'A senha não pode ter mais que :max caracteres.',
+            'password.max'       => 'A senha não pode ter mais de :max caracteres.',
         ];
     }
 }

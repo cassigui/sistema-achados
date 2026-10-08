@@ -5,19 +5,17 @@ use App\Modules\Account\AccountException;
 use App\Modules\Account\Auth\AuthService;
 use App\Modules\Account\Notifications\ResetPasswordNotification;
 use App\Modules\Base\Services\ApiService;
-use App\Modules\Phones\PhoneService;
 use Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class UserService
 {
-    public function __construct(User $model, AuthService $auth_service, PhoneService $phone_service)
+    public function __construct(User $model, AuthService $auth_service)
     {
         $this->model           = $model;
         $this->api             = new ApiService($this->model, $this->getCustomFilters());
         $this->auth            = $auth_service;
-        $this->phone_service   = $phone_service;
     }
 
     protected function getCustomFilters()
@@ -66,31 +64,6 @@ class UserService
 
             $user->update($data);
 
-            if (! empty($data['phones'])) {
-                foreach ($data['phones'] as $phone) {
-                    if ($phone['id'] > 0) {
-                        $this->phone_service->update($phone, $phone['id'], $user->id, 'users');
-                    } else {
-                        $this->phone_service->store($phone, $user->id, 'users');
-                    }
-                }
-            }
-
-            if (! empty($data['addresses'])) {
-                foreach ($data['addresses'] as $address) {
-                    $this->address_service->storeOrUpdate($address, 'users', $user->id);
-                }
-            }
-
-            if (! empty($data['notices'])) {
-                $notices = [];
-                foreach ($data['notices'] as $notice) {
-                    if ($notice['checked'] === true) {
-                        $notices[] = $notice['id'];
-                    }
-                }
-                $user->notices()->sync($notices);
-            }
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();

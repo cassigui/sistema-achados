@@ -21,7 +21,6 @@ class User extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'name',
-        'phone',
         'username',
         'email',
         'access_level_id',
@@ -51,15 +50,6 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return $this->access_level->permissions()->orderBy('name', 'asc');
-    }
-
-    public function getFirstNameAttribute()
-    {
-        if (empty($this->attributes['name'])) {
-            return null;
-        }
-
-        return explode(' ', $this->attributes['name'])[0];
     }
 
     public function getAuditTranslationPrefix(): string

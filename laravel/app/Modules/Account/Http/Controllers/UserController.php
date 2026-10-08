@@ -10,11 +10,9 @@ use App\Modules\Account\Http\Requests\ForgotPasswordRequest;
 use App\Modules\Account\Http\Requests\LogInRequest;
 use App\Modules\Account\Http\Requests\StoreUserRequest;
 use App\Modules\Account\Http\Requests\UpdatePasswordRequest;
-use App\Modules\Account\Http\Requests\UpdateProfileRequest;
 use App\Modules\Account\Http\Requests\UpdateUserRequest;
 use App\Modules\Account\Users\UserService;
 use App\Modules\Base\Utilities\UtilityService;
-use App\Modules\Images\Image;
 use App\Modules\Images\ImageService;
 use Auth;
 use Illuminate\Http\Request;
@@ -73,96 +71,51 @@ class UserController extends Controller
     {
         return view('account::auth.register.register_page');
     }
-    public function show($id)
+
+    public function login(LogInRequest $request)
     {
-        if ($id === 'authenticated' && Auth::check() && Auth::user()->authenticable) {
+        $credentials = $request->validated();
+
+        $attemptData = array_merge($credentials, ['active' => 1]);
+
+        if (Auth::attempt($attemptData)) {
+            $request->session()->regenerate();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error'   => false,
+                    'message' => 'Login realizado com sucesso!',
+                ]);
+            }
+
+            return redirect()->intended(route('dashboard'))->with('status', 'Bem-vindo de volta!');
+        }
+
+        return back()->withErrors([
+            'email' => 'As credenciais informadas estão incorretas ou a conta está inativa.',
+        ])->onlyInput('email');
+    }
+
+    public function register(StoreUserRequest $request)
+    {
+        $data = array_merge($request->validated(), [
+            'username'        => strstr($request->email, '@', true),
+            'access_level_id' => 2,
+            'active'          => true,
+        ]);
+
+        $user = $this->user_service->store($data);
+        Auth::login($user);
+
+        if ($request->wantsJson()) {
             return response()->json([
-                'error' => false,
-                'user'  => Auth::user()->load('authenticable.address', 'authenticable.phone'),
-            ], 200);
+                'error'   => false,
+                'user'    => $user,
+                'message' => __('account::toasts.users.store'),
+            ]);
         }
 
-        return response()->json([
-            'error' => true,
-            'user'  => 'Erro na autenticação',
-        ], 200);
-    }
-
-    /**
-     * Perfil do próprio usuário logado. O id vem do token — não existe
-     * parâmetro de id, então não há como ler/alterar outro usuário.
-     */
-    public function profile(Request $request)
-    {
-        return response()->json([
-            'error' => false,
-            'user'  => $this->loadProfile(),
-        ]);
-    }
-
-    public function updateProfile(UpdateProfileRequest $request)
-    {
-        $this->user_service->update(
-            $request->only('name', 'email', 'username', 'password'),
-            Auth::id()
-        );
-
-        return response()->json([
-            'error'   => false,
-            'user'    => $this->loadProfile(),
-            'message' => __('account::toasts.users.update'),
-        ]);
-    }
-
-    /**
-     * Troca a foto de perfil (category 'avatar'). Só aceita o base64 —
-     * o imageable_id é sempre o do token.
-     */
-    public function storeProfileImage(Request $request)
-    {
-        $request->validate(['base64' => 'required|string']);
-
-        $this->destroyProfileImages();
-
-        $image = $this->image_service->store([
-            'base64'         => $request->input('base64'),
-            'imageable_type' => 'users',
-            'imageable_id'   => Auth::id(),
-            'category'       => 'avatar',
-        ]);
-
-        return response()->json([
-            'error'   => false,
-            'image'   => $image,
-            'message' => __('images::toasts.store'),
-        ]);
-    }
-
-    public function destroyProfileImage()
-    {
-        $this->destroyProfileImages();
-
-        return response()->json([
-            'error'   => false,
-            'message' => __('images::toasts.destroy'),
-        ]);
-    }
-
-    private function destroyProfileImages()
-    {
-        $images = Image::where('imageable_type', 'users')
-            ->where('imageable_id', Auth::id())
-            ->where('category', 'avatar')
-            ->get();
-
-        foreach ($images as $image) {
-            $this->image_service->destroy($image->id);
-        }
-    }
-
-    private function loadProfile()
-    {
-        return Auth::user()->load('access_level.permissions', 'images');
+        return redirect()->route('dashboard')->with('status', 'Conta criada com sucesso!');
     }
 
     public function update(UpdateUserRequest $request, $id)
