@@ -30,7 +30,7 @@ Abra o seu terminal e clone o projeto para a sua máquina:
 
 ```
 git clone https://github.com/cassigui/sistema-achados.git
-cd sistema-achados
+cd sistema-achados/laravel
 
 ```
 
@@ -60,6 +60,7 @@ DB_PASSWORD=root
 Inicie os serviços do projeto em segundo plano utilizando o Docker Compose:
 
 ```
+cd laravel/docker
 docker compose up -d --build ou docker-compose up -d --build
 
 ```
@@ -71,7 +72,6 @@ docker compose up -d --build ou docker-compose up -d --build
 Para criar a estrutura de tabelas no banco de dados e logo em seguida preenchê-la com os usuários padrão e os itens iniciais de teste, execute o comando de refresh com seed:
 
 ```
-cd laravel/docker
 docker exec sistema_achados_app php artisan migrate:fresh --seed
 
 ```
