@@ -2,9 +2,11 @@
 namespace App\Modules\Items\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Account\Users\User;
 use App\Modules\Items\Http\Requests\ItemRequest;
 use App\Modules\Items\Item;
 use App\Modules\Items\ItemService;
+use App\Modules\ItemsClaimedNotifications\ItemsClaimedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -20,8 +22,7 @@ class ItemController extends Controller
     public function dashboard(Request $request)
     {
         $userId = Auth::id();
-
-        $query = Item::with(['user']);
+        $query  = Item::with(['user']);
 
         $query->where(function ($q) use ($userId) {
             $q->where('status', '!=', 'devolvido')
@@ -89,11 +90,6 @@ class ItemController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $item = Item::findOrFail($id);
-
-        if ((int) Auth::id() !== (int) $item->user_id) {
-            abort(403, 'Ação não autorizada.');
-        }
-
         $request->validate([
             'status' => ['required', 'in:perdido,encontrado,devolvido'],
         ]);
@@ -128,13 +124,30 @@ class ItemController extends Controller
         return redirect()->route('dashboard')->with('status', 'Item atualizado com sucesso!');
     }
 
+    public function claim(Request $request, $id)
+    {
+        $item = Item::findOrFail($id);
+        $user = auth()->user();
+
+        // Impede que o próprio dono reivindique o item
+        if ((int) $user->id === (int) $item->user_id) {
+            return back()->with('error', 'Você não pode reivindicar o seu próprio item.');
+        }
+
+        $admins = User::where('super_admin', 1)->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new ItemsClaimedNotification($item, $user));
+        }
+
+        return back()->with('status', 'Reivindicação enviada com sucesso! Um administrador entrará em contacto.');
+    }
+
     public function destroy(Request $request, $id)
     {
         // Tenta recuperar o ID via $request->user() ou Auth
         $user   = $request->user() ?? auth()->user();
         $userId = $user ? $user->id : null;
-
-        \Log::info('DELETE Executado - User via Request: ' . ($user ? $user->id : 'NULO'));
 
         if (! $userId) {
             return redirect()->route('dashboard')->with('error', 'Sessão não identificada.');
@@ -142,10 +155,13 @@ class ItemController extends Controller
 
         $item = Item::findOrFail($id);
 
-        if ((int) $userId !== (int) $item->user_id) {
+        $isOwner = (int) $userId === (int) $item->user_id;
+        $isAdmin = (bool) ($user->is_admin ?? false);
+        $isSuper = (bool) ($user->super_admin ?? false);
+
+        if (! $isOwner && ! $isAdmin && ! $isSuper) {
             return redirect()->route('dashboard')->with('error', 'Sem permissão para excluir este item.');
         }
-
         if ($item->image_path && Storage::disk('public')->exists($item->image_path)) {
             Storage::disk('public')->delete($item->image_path);
         }

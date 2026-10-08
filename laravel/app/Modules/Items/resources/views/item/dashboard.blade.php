@@ -22,15 +22,41 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
                 </ul>
+
+                <!-- Grupo direito: Notificações, Nome do Usuário e Botão Sair -->
                 <div class="d-flex align-items-center gap-3 text-white">
-                    <span class="small"><i class="fa-solid fa-user me-1"></i>
-                        {{ Auth::user()->name ?? 'Usuário' }}</span>
+
+                    @if (auth()->check() && (auth()->user()->isAdmin() || auth()->user()->super_admin))
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link position-relative px-2 py-1 text-white rounded hover-bg"
+                                    href="{{ route('admin.notifications') }}" title="Notificações de Reivindicação">
+                                    <i class="fas fa-bell fa-lg"></i>
+                                    @php $unreadCount = auth()->user()->unreadNotifications->count(); @endphp
+                                    @if ($unreadCount > 0)
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                                            {{ $unreadCount }}
+                                            <span class="visually-hidden">notificações não lidas</span>
+                                        </span>
+                                    @endif
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="vr bg-light opacity-50 d-none d-lg-block" style="height: 24px;"></div>
+                    @endif
+
+                    <span class="small">
+                        <i class="fa-solid fa-user me-1"></i> {{ Auth::user()->name ?? 'Usuário' }}
+                    </span>
+
                     <form method="POST" action="{{ route('logout') }}" class="m-0">
                         @csrf
                         <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
@@ -45,7 +71,7 @@
         {{-- Header / Boas-vindas --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 font-weight-bold text-dark mb-1">Painel de Gerenciamento</h1>
+                <h1 class="h3 font-weight-bold text-dark mb-1">Achados e Perdidos</h1>
                 <p class="text-muted mb-0">Gerencie os itens perdidos e encontrados no campus.</p>
             </div>
             @if (Route::has('items.create'))
@@ -179,7 +205,20 @@
                                                 </a>
                                             @endif
 
-                                            @if ((int) Auth::id() === (int) $item->user_id)
+                                            {{-- Botão de Reivindicar ajustado para o padrão compacto --}}
+                                            @if (Auth::check() && !Auth::user()->isOwnerOf($item) && !Auth::user()->isAdmin() && !Auth::user()->super_admin)
+                                                <form action="{{ route('items.claim', $item->id) }}" method="POST"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Deseja realmente reivindicar este item?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-outline-success btn-sm"
+                                                        title="Reivindicar Item">
+                                                        <i class="fas fa-hand-holding-heart"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            @if (Auth::user()?->isOwnerOf($item) || Auth::user()?->is_admin || Auth::user()?->super_admin)
                                                 @if (Route::has('items.edit'))
                                                     <a href="{{ route('items.edit', $item->id) }}"
                                                         class="btn btn-outline-primary" title="Editar">
@@ -208,7 +247,7 @@
                                 <tr>
                                     <td colspan="7" class="text-center py-5 text-muted">
                                         <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
-                                        <p class="mb-0">Nenhum item registrado no sistema até o momento.</p>
+                                        <p class="mb-0">Ainda não há itens cadastrados.</p>
                                     </td>
                                 </tr>
                             @endforelse

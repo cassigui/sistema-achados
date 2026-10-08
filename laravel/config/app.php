@@ -166,7 +166,8 @@ return [
         App\Modules\Account\Providers\AccountServiceProvider::class,
         App\Modules\Configs\Providers\ConfigServiceProvider::class,
         App\Modules\Items\Providers\ItemServiceProvider::class,
-        App\Modules\Comments\Providers\CommentServiceProvider::class
+        App\Modules\Comments\Providers\CommentServiceProvider::class,
+        App\Modules\ItemsClaimedNotifications\Providers\ItemsClaimedNotificationServiceProvider::class
     ],
 
     'aliases'         => [

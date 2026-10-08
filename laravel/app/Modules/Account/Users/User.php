@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Modules\Account\Users;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,41 +14,33 @@ class User extends Authenticatable implements JWTSubject
     use Authorizable;
 
     protected $casts = [
-        'active'            => 'boolean',
-        'backup_codes'      => 'array',
+        'active'   => 'boolean',
+        'super_admin' => 'boolean',
     ];
 
     protected $fillable = [
         'name',
         'username',
         'email',
-        'access_level_id',
-        'active',
         'password',
-        'authenticable_type',
-        'authenticable_id',
-
+        'active',
+        'super_admin',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
-        'super_admin',
         'backup_codes',
     ];
 
-    public function access_level()
+    public function isAdmin(): bool
     {
-        return $this->belongsTo('App\Modules\Account\Permissions\AccessLevels\AccessLevel');
+        return (bool) $this->super_admin;
     }
 
-    public function permissions()
+    public function isOwnerOf($item): bool
     {
-        if (!$this->access_level()->exists()) {
-            return [];
-        }
-
-        return $this->access_level->permissions()->orderBy('name', 'asc');
+        return (int) $this->id === (int) $item->user_id;
     }
 
     public function getAuditTranslationPrefix(): string
@@ -62,18 +53,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->morphTo();
     }
 
-    /**
-     * Imagens do usuário (polimórficas). A foto de perfil usa category 'avatar'.
-     */
-    public function images()
-    {
-        return $this->morphMany('App\Modules\Images\Image', 'imageable');
-    }
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
     public function getJWTIdentifier()
     {
         return $this->getKey();

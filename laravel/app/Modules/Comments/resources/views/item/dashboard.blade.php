@@ -45,7 +45,7 @@
         {{-- Header / Boas-vindas --}}
         <div class="d-flex justify-content-between align-comments-center mb-4">
             <div>
-                <h1 class="h3 font-weight-bold text-dark mb-1">Painel de Gerenciamento</h1>
+                <h1 class="h3 font-weight-bold text-dark mb-1">Achados e Perdidos</h1>
                 <p class="text-muted mb-0">Gerencie os itens perdidos e encontrados no campus.</p>
             </div>
             @if (Route::has('comments.create'))

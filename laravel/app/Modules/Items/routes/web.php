@@ -13,5 +13,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::put('items/{id}', [ItemController::class, 'update'])->name('items.update');
     Route::delete('items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
 
+    Route::post('/items/{id}/claim', [ItemController::class, 'claim'])->name('items.claim');
+
     Route::patch('items/{id}/status', [ItemController::class, 'updateStatus'])->name('items.status.update');
 });

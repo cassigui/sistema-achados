@@ -104,9 +104,9 @@
                                     @enderror
                                 </div>
 
-                                {{-- Status Inicial --}}
+                                {{-- Tipo --}}
                                 <div class="col-md-6">
-                                    <label for="status" class="form-label font-weight-bold">Status Inicial <span class="text-danger">*</span></label>
+                                    <label for="status" class="form-label font-weight-bold">Tipo <span class="text-danger">*</span></label>
                                     <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                         <option value="encontrado" {{ old('status', 'encontrado') == 'encontrado' ? 'selected' : '' }}>Encontrado (Achei no campus)</option>
                                         <option value="perdido" {{ old('status') == 'perdido' ? 'selected' : '' }}>Perdido (Perdi no campus)</option>

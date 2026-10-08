@@ -127,7 +127,8 @@
                         </div>
                     </div>
 
-                    @if ((int) Auth::id() === (int) $item->user_id)
+                    @if (Auth::check() &&
+                            ((int) Auth::id() === (int) $item->user_id || Auth::user()->isAdmin() || Auth::user()->super_admin))
                         <div
                             class="card-footer bg-light p-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
 

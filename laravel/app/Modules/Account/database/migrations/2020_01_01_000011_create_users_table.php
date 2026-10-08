@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('username', 100)->comment('Identificação do usuário');
             $table->string('password', 255)->comment('Senha do usuário');
             $table->boolean('active')->default(1)->comment('Usuário ativo (1) ou inativo (0)');
+            $table->boolean('is_admin')->default(0)->comment('Usuário administrador (1) ou padrão (0)');
             $table->boolean('super_admin')->default(0);
             $table->unsignedInteger('access_level_id')->nullable();
             $table->string('authenticable_type', 100)->nullable();

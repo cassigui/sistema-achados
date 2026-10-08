@@ -14,7 +14,6 @@ use App\Modules\Account\Http\Requests\UpdateUserRequest;
 use App\Modules\Account\Users\User;
 use App\Modules\Account\Users\UserService;
 use App\Modules\Base\Utilities\UtilityService;
-use App\Modules\Images\ImageService;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,14 +31,12 @@ class UserController extends Controller
         AuthService $auth_service,
         UtilityService $utility_service,
         TokenService $token_service,
-        ImageService $image_service
     ) {
         // $this->authorizeResource("App\Modules\Account\Users\User", "App\Modules\Account\Users\User");
         $this->user_service    = $user_service;
         $this->auth_service    = $auth_service;
         $this->token_service   = $token_service;
         $this->utility_service = $utility_service;
-        $this->image_service   = $image_service;
     }
 
     protected function resourceAbilityMap()

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Items\Http\Requests;
+namespace App\Modules\ItemsClaimedNotifications\Http\Requests;
 
 use App\Modules\Base\BaseRequest;
 
-class ItemRequest extends BaseRequest
+class ItemsClaimedNotificationRequest extends BaseRequest
 {
     public function authorize()
     {
@@ -25,23 +25,23 @@ class ItemRequest extends BaseRequest
     public function attributeNames()
     {
         return [
-            'title'       => 'Título do Item',
+            'title'       => 'Título do ItemsClaimedNotification',
             'description' => 'Descrição',
             'category'    => 'Categoria',
             'status'      => 'Status',
-            'image'       => 'Foto do Item',
+            'image'       => 'Foto do ItemsClaimedNotification',
         ];
     }
 
     public function messages()
     {
         return [
-            'title.required'       => 'O título do item é obrigatório.',
+            'title.required'       => 'O título do itemsClaimedNotification é obrigatório.',
             'title.max'            => 'O título não pode ter mais de 150 caracteres.',
             'description.required' => 'A descrição é obrigatória.',
             'category.required'    => 'Selecione uma categoria válida.',
             'category.in'          => 'A categoria selecionada é inválida.',
-            'status.required'      => 'Selecione o tipo do item.',
+            'status.required'      => 'Selecione o tipo do itemsClaimedNotification.',
             'status.in'            => 'O status selecionado é inválido.',
             'image.image'          => 'O arquivo enviado deve ser uma imagem.',
             'image.mimes'          => 'A imagem deve estar no formato JPG, PNG ou WEBP.',
