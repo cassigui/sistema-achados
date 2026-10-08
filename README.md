@@ -71,6 +71,7 @@ docker compose up -d --build ou docker-compose up -d --build
 Para criar a estrutura de tabelas no banco de dados e logo em seguida preenchê-la com os usuários padrão e os itens iniciais de teste, execute o comando de refresh com seed:
 
 ```
+cd laravel/docker
 docker exec sistema_achados_app php artisan migrate:fresh --seed
 
 ```
