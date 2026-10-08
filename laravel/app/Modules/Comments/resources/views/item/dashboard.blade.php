@@ -24,11 +24,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
+                    <li class="nav-comment">
                         <a class="nav-link active" href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
                 </ul>
-                <div class="d-flex align-items-center gap-3 text-white">
+                <div class="d-flex align-comments-center gap-3 text-white">
                     <span class="small"><i class="fa-solid fa-user me-1"></i>
                         {{ Auth::user()->name ?? 'Usuário' }}</span>
                     <form method="POST" action="{{ route('logout') }}" class="m-0">
@@ -43,14 +43,14 @@
     {{-- Conteúdo Principal --}}
     <div class="container py-2">
         {{-- Header / Boas-vindas --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-comments-center mb-4">
             <div>
                 <h1 class="h3 font-weight-bold text-dark mb-1">Painel de Gerenciamento</h1>
                 <p class="text-muted mb-0">Gerencie os itens perdidos e encontrados no campus.</p>
             </div>
-            @if (Route::has('items.create'))
-                <a href="{{ route('items.create') }}" class="btn btn-primary shadow-sm">
-                    <i class="fas fa-plus me-1"></i> Registrar Novo Item
+            @if (Route::has('comments.create'))
+                <a href="{{ route('comments.create') }}" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Registrar Novo Comment
                 </a>
             @endif
         </div>
@@ -119,7 +119,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 80px;">Foto</th>
-                                <th>Item</th>
+                                <th>Comment</th>
                                 <th>Categoria</th>
                                 <th>Status</th>
                                 <th>Registrado por</th>
@@ -128,69 +128,69 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($items as $item)
+                            @forelse($comments as $comment)
                                 <tr>
                                     <td>
-                                        @if ($item->image_path)
-                                            <img src="{{ asset('storage/' . $item->image_path) }}"
-                                                alt="{{ $item->title }}" class="rounded img-thumbnail"
+                                        @if ($comment->image_path)
+                                            <img src="{{ asset('storage/' . $comment->image_path) }}"
+                                                alt="{{ $comment->title }}" class="rounded img-thumbnail"
                                                 style="width: 50px; height: 50px; object-fit: cover;">
                                         @else
-                                            <div class="bg-light text-secondary rounded d-flex align-items-center justify-content-center border"
+                                            <div class="bg-light text-secondary rounded d-flex align-comments-center justify-content-center border"
                                                 style="width: 50px; height: 50px;">
                                                 <i class="fas fa-image"></i>
                                             </div>
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="fw-bold text-dark">{{ $item->title }}</div>
+                                        <div class="fw-bold text-dark">{{ $comment->title }}</div>
                                         <small class="text-muted d-inline-block text-truncate"
                                             style="max-width: 250px;">
-                                            {{ $item->description }}
+                                            {{ $comment->description }}
                                         </small>
                                     </td>
                                     <td>
                                         <span class="badge bg-light text-dark border">
-                                            {{ ucfirst($item->category->name ?? $item->category) }}
+                                            {{ ucfirst($comment->category->name ?? $comment->category) }}
                                         </span>
                                     </td>
                                     <td>
-                                        @if ($item->status === 'devolvido')
+                                        @if ($comment->status === 'devolvido')
                                             <span class="badge bg-success">Devolvido</span>
-                                        @elseif($item->status === 'encontrado')
+                                        @elseif($comment->status === 'encontrado')
                                             <span class="badge bg-info text-dark">Encontrado</span>
                                         @else
                                             <span class="badge bg-warning text-dark">Perdido</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <small class="fw-semibold">{{ $item->user->name ?? 'Usuário' }}</small>
+                                        <small class="fw-semibold">{{ $comment->user->name ?? 'Usuário' }}</small>
                                     </td>
                                     <td>
                                         <small
-                                            class="text-muted">{{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}</small>
+                                            class="text-muted">{{ $comment->created_at ? $comment->created_at->format('d/m/Y H:i') : '-' }}</small>
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            @if (Route::has('items.show'))
-                                                <a href="{{ route('items.show', $item->id) }}"
+                                            @if (Route::has('comments.show'))
+                                                <a href="{{ route('comments.show', $comment->id) }}"
                                                     class="btn btn-outline-info" title="Ver detalhes/comentários">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                             @endif
 
-                                            @if ((int) Auth::id() === (int) $item->user_id)
-                                                @if (Route::has('items.edit'))
-                                                    <a href="{{ route('items.edit', $item->id) }}"
+                                            @if ((int) Auth::id() === (int) $comment->user_id)
+                                                @if (Route::has('comments.edit'))
+                                                    <a href="{{ route('comments.edit', $comment->id) }}"
                                                         class="btn btn-outline-primary" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 @endif
 
-                                                @if (Route::has('items.destroy'))
-                                                    <form action="{{ route('items.destroy', $item->id) }}"
+                                                @if (Route::has('comments.destroy'))
+                                                    <form action="{{ route('comments.destroy', $comment->id) }}"
                                                         method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Tem certeza que deseja excluir este item?');">
+                                                        onsubmit="return confirm('Tem certeza que deseja excluir este comment?');">
                                                         @csrf
                                                         @method('DELETE')
 
@@ -208,7 +208,7 @@
                                 <tr>
                                     <td colspan="7" class="text-center py-5 text-muted">
                                         <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
-                                        <p class="mb-0">Nenhum item registrado no sistema até o momento.</p>
+                                        <p class="mb-0">Nenhum comment registrado no sistema até o momento.</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -216,9 +216,9 @@
                     </table>
                 </div>
             </div>
-            @if (method_exists($items, 'links'))
+            @if (method_exists($comments, 'links'))
                 <div class="card-footer bg-white border-0 py-3">
-                    {{ $items->links() }}
+                    {{ $comments->links() }}
                 </div>
             @endif
         </div>

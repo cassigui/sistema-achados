@@ -14,21 +14,38 @@ class ItemRequest extends BaseRequest
     public function rules()
     {
         return [
-            //
+            'title'       => ['required', 'string', 'max:150'],
+            'description' => ['required', 'string'],
+            'category'    => ['required', 'in:eletronicos,documentos,vestuario,outros'],
+            'status'      => ['required', 'in:perdido,encontrado,devolvido'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 
     public function attributeNames()
     {
         return [
-            //
+            'title'       => 'Título do Item',
+            'description' => 'Descrição',
+            'category'    => 'Categoria',
+            'status'      => 'Status',
+            'image'       => 'Foto do Item',
         ];
     }
 
     public function messages()
     {
         return [
-            //
+            'title.required'       => 'O título do item é obrigatório.',
+            'title.max'            => 'O título não pode ter mais de 150 caracteres.',
+            'description.required' => 'A descrição é obrigatória.',
+            'category.required'    => 'Selecione uma categoria válida.',
+            'category.in'          => 'A categoria selecionada é inválida.',
+            'status.required'      => 'Selecione o status inicial do item.',
+            'status.in'            => 'O status selecionado é inválido.',
+            'image.image'          => 'O arquivo enviado deve ser uma imagem.',
+            'image.mimes'          => 'A imagem deve estar no formato JPG, PNG ou WEBP.',
+            'image.max'            => 'A imagem não pode ultrapassar 2MB.',
         ];
     }
 }

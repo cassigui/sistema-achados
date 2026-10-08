@@ -11,11 +11,14 @@ use App\Modules\Account\Http\Requests\LogInRequest;
 use App\Modules\Account\Http\Requests\StoreUserRequest;
 use App\Modules\Account\Http\Requests\UpdatePasswordRequest;
 use App\Modules\Account\Http\Requests\UpdateUserRequest;
+use App\Modules\Account\Users\User;
 use App\Modules\Account\Users\UserService;
 use App\Modules\Base\Utilities\UtilityService;
 use App\Modules\Images\ImageService;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -51,16 +54,15 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = $this->user_service->store(
-            $request->except('relations'),
-            $request->only('relations')
-        );
+        $data = $request->validated();
 
-        return response()->json([
-            'error'   => false,
-            'user'    => $user,
-            'message' => __('account::toasts.users.store'),
+        User::create([
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => bcrypt($data['password']),
         ]);
+
+        return redirect()->route('login')->with('status', 'Conta criada com sucesso!');
     }
 
     public function loginPage()
@@ -72,6 +74,16 @@ class UserController extends Controller
         return view('account::auth.register.register_page');
     }
 
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('status', 'Sessão encerrada com sucesso.');
+    }
+
     public function login(LogInRequest $request)
     {
         $credentials = $request->validated();
@@ -80,14 +92,6 @@ class UserController extends Controller
 
         if (Auth::attempt($attemptData)) {
             $request->session()->regenerate();
-
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => false,
-                    'message' => 'Login realizado com sucesso!',
-                ]);
-            }
-
             return redirect()->intended(route('dashboard'))->with('status', 'Bem-vindo de volta!');
         }
 
@@ -96,28 +100,39 @@ class UserController extends Controller
         ])->onlyInput('email');
     }
 
-    public function register(StoreUserRequest $request)
+    public function register(Request $request)
     {
-        $data = array_merge($request->validated(), [
-            'username'        => strstr($request->email, '@', true),
-            'access_level_id' => 2,
-            'active'          => true,
+
+        $validator = Validator::make($request->all(), [
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.unique'       => 'Este e-mail já está cadastrado.',
+            'password.min'       => 'A senha deve ter pelo menos 8 caracteres.',
+            'password.confirmed' => 'A confirmação de senha não confere.',
         ]);
 
-        $user = $this->user_service->store($data);
-        Auth::login($user);
-
-        if ($request->wantsJson()) {
-            return response()->json([
-                'error'   => false,
-                'user'    => $user,
-                'message' => __('account::toasts.users.store'),
-            ]);
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput($request->except('password', 'password_confirmation'));
         }
+        $username = explode('@', $request->input('email'))[0];
+
+        $user = User::create([
+            'name'     => $request->input('name'),
+            'username' => $username,
+            'email'    => $request->input('email'),
+            'password' => Hash::make($request->input('password')),
+            'active'   => 1,
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect()->route('dashboard')->with('status', 'Conta criada com sucesso!');
     }
-
     public function update(UpdateUserRequest $request, $id)
     {
         $user = $this->user_service->update(

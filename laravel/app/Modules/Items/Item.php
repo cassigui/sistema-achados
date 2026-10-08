@@ -1,27 +1,28 @@
 <?php
-
 namespace App\Modules\Items;
 
+use App\Modules\Account\Users\User;
+use App\Modules\Comments\Comment;
 use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
-{   
+{
     protected $fillable = [
-        'name',
-        'item_id',
+        'user_id',
+        'title',
+        'description',
+        'image_path',
+        'category',
+        'status',
     ];
 
-    protected $casts = [
-        'checked' => 'boolean',
-    ];
-
-    public function item()
+    public function user()
     {
-        return $this->belongsTo('App\Modules\Items\Item');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function installation_item()
+    public function comments()
     {
-        return $this->belongsToMany('App\Modules\InstallationItems\InstallationItem', 'item_installation_check')->withPivot('checked');
+        return $this->hasMany(Comment::class);
     }
 }
