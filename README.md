@@ -30,7 +30,7 @@ Abra o seu terminal e clone o projeto para a sua máquina:
 
 ```
 git clone https://github.com/cassigui/sistema-achados.git
-cd sistema-achados
+cd sistema-achados/laravel
 
 ```
 
