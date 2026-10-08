@@ -60,7 +60,7 @@ DB_PASSWORD=root
 Inicie os serviços do projeto em segundo plano utilizando o Docker Compose:
 
 ```
-cd laravel/docker
+cd docker
 docker compose up -d --build ou docker-compose up -d --build
 
 ```
