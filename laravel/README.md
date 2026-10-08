@@ -1,58 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📦 Sistema de Achados e Perdidos - UTFPR
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma web desenvolvida para otimizar o gerenciamento de itens perdidos e encontrados no ambiente acadêmico da UTFPR, facilitando a devolução de pertences aos seus donos por meio de um fluxo automatizado de notificações e controle de acesso por níveis de permissão.
 
-## About Laravel
+## 🚀 Tecnologias Utilizadas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* **Backend:** PHP 8.3+ / Laravel 13+
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* **Banco de Dados:** MySQL / MariaDB
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **Frontend:** Blade Templates, Bootstrap 5, FontAwesome
 
-## Learning Laravel
+* **Ambiente:** Docker & Docker Compose
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ⚙️ Pré-requisitos
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+* [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
 
-## Agentic Development
+* Git
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🛠️ Passo a Passo Completo para Configuração e Execução
 
-```bash
-composer require laravel/boost --dev
+Siga os passos abaixo rigorosamente para configurar o ambiente do zero, incluindo a base de dados:
 
-php artisan boost:install
+### 1. Clonar o Repositório
+
+Abra o seu terminal e clone o projeto para a sua máquina:
+
+```
+git clone https://github.com/cassigui/sistema-achados.git
+cd sistema-achados
+
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Configurar o Arquivo de Ambiente (`.env`)
 
-## Contributing
+Copie o arquivo de exemplo de ambiente para criar o seu arquivo `.env` oficial:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+cp .env.example .env
 
-## Code of Conduct
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Abra o arquivo `.env` gerado e certifique-se de que as configurações de conexão com o banco de dados estão alinhadas com o seu container Docker (geralmente vêm configuradas por padrão):
 
-## Security Vulnerabilities
+```
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=sistema_achados
+DB_USERNAME=root
+DB_PASSWORD=root
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
 
-## License
+### 3. Subir os Containers com o Docker
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Inicie os serviços do projeto em segundo plano utilizando o Docker Compose:
+
+```
+docker compose up -d --build ou docker-compose up -d --build
+
+```
+
+*(Aguarde alguns segundos até que os containers do PHP/Nginx e do Banco de Dados estejam totalmente inicializados).*
+
+### 4. Configurar e Popular a Base de Dados (Migrate & Seed)
+
+Para criar a estrutura de tabelas no banco de dados e logo em seguida preenchê-la com os usuários padrão e os itens iniciais de teste, execute o comando de refresh com seed:
+
+```
+docker exec sistema_achados_app php artisan migrate:fresh --seed
+
+```
+
+Este comando irá:
+
+1. Apagar e recriar todas as tabelas do banco de dados (Migrations).
+
+2. Executar o `DatabaseSeeder`, populando a base com o Administrador, o Usuário Comum e os 5 itens de exemplo.
+
+## 🔑 Credenciais Padrão para Testes
+
+Após rodar os seeders, você poderá aceder ao sistema utilizando as seguintes contas:
+
+### 👑 Administrador (Acesso Total & Notificações)
+
+* **E-mail:** `admin@utfpr.br`
+
+* **Senha:** `SenhaTeste123!`
+
+### 👤 Usuário Comum (Gestão de Itens Próprios)
+
+* **E-mail:** `usuario@utfpr.br`
+
+* **Senha:** `SenhaTeste123!`
+
+## 🌐 Acesso à Aplicação
+
+Com tudo configurado e rodando, abra o seu navegador e acesse:
+
+```
+http://localhost:8300
+
+```
